@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class BlpsLab3MonolitApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(BlpsLab3MonolitApplication.class, args);
     }
