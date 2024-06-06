@@ -32,6 +32,9 @@ public class Client {
     @Column(nullable = false)
     private String password;
 
+    @Column
+    private String restorePassword;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 

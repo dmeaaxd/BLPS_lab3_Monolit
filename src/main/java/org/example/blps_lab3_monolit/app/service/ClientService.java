@@ -8,16 +8,21 @@ import org.example.blps_lab3_monolit.app.entity.auth.Client;
 import org.example.blps_lab3_monolit.app.entity.auth.Role;
 import org.example.blps_lab3_monolit.app.repository.ClientRepository;
 import org.example.blps_lab3_monolit.app.repository.RoleRepository;
+import org.example.blps_lab3_monolit.jms.message.NotificationJmsMessage;
+import org.example.blps_lab3_monolit.jms.sender.JmsNotificationSender;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
 @AllArgsConstructor
 public class ClientService {
+    private JmsNotificationSender jmsNotificationSender;
 
     private ClientRepository clientRepository;
     private RoleRepository roleRepository;
@@ -69,5 +74,51 @@ public class ClientService {
                 .email(client.getEmail())
                 .roles(client.getRoles())
                 .build();
+    }
+
+    public void requestChangePassword(String username) throws NoSuchElementException{
+        Client client = clientRepository.findByUsername(username);
+        if (client == null) {
+            throw new NoSuchElementException("Пользователь с username " + username + " не найден");
+        }
+
+        String restorePassword = generateRestorePassword();
+        client.setRestorePassword(passwordEncoder.encode(restorePassword));
+        clientRepository.save(client);
+
+        jmsNotificationSender.sendNotification(NotificationJmsMessage.builder()
+                .to(client.getEmail())
+                .theme("Восстановление пароля")
+                .text("Код восстановления: " + restorePassword).build());
+    }
+
+    private String generateRestorePassword(){
+        final int LEN = 10;
+
+        String alphaNumericStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
+        StringBuilder s = new StringBuilder(LEN);
+
+        for (int i = 0; i < LEN; i++) {
+            int ch = (int)(alphaNumericStr.length() * Math.random());
+            s.append(alphaNumericStr.charAt(ch));
+        }
+
+        return s.toString();
+    }
+
+
+    public void changePassword(String username, String restorePassword, String newPassword) throws NoSuchElementException, IllegalArgumentException{
+        Client client = clientRepository.findByUsername(username);
+        if (client == null) {
+            throw new NoSuchElementException("Пользователь с username " + username + " не найден");
+        }
+
+        if (!passwordEncoder.matches(restorePassword, client.getRestorePassword())){
+            throw new IllegalArgumentException("Введен некорректный код восстановления");
+        }
+
+        client.setRestorePassword(null);
+        client.setPassword(passwordEncoder.encode(newPassword));
+        clientRepository.save(client);
     }
 }

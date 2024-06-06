@@ -26,6 +26,8 @@ public class SecurityConfig {
         http
                 .csrf((csrf) -> csrf.ignoringRequestMatchers("/**"))
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(new AntPathRequestMatcher("/auth/register")).permitAll())
+                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/auth/request_change_password").permitAll())
+                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/auth/change_password").permitAll())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.GET, "/shop/**").permitAll())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.GET, "/category/**").permitAll())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.GET, "/shop_discounts/**").permitAll())
