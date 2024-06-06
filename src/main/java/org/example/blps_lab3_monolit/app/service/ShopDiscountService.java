@@ -5,16 +5,21 @@ import org.example.blps_lab3_monolit.app.dto.discounts.DiscountDTO;
 import org.example.blps_lab3_monolit.app.dto.discounts.DiscountInListDTO;
 import org.example.blps_lab3_monolit.app.entity.Discount;
 import org.example.blps_lab3_monolit.app.entity.Shop;
+import org.example.blps_lab3_monolit.app.entity.Subscription;
 import org.example.blps_lab3_monolit.app.entity.auth.Client;
 import org.example.blps_lab3_monolit.app.repository.ClientRepository;
 import org.example.blps_lab3_monolit.app.repository.DiscountRepository;
 import org.example.blps_lab3_monolit.app.repository.ShopRepository;
+import org.example.blps_lab3_monolit.app.repository.SubscriptionRepository;
+import org.example.blps_lab3_monolit.jms.message.NotificationJmsMessage;
+import org.example.blps_lab3_monolit.jms.sender.JmsNotificationSender;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -23,6 +28,9 @@ public class ShopDiscountService {
     private final ShopRepository shopRepository;
     private final DiscountRepository discountRepository;
     private final ClientRepository clientRepository;
+    private final SubscriptionRepository subscriptionRepository;
+
+    private final JmsNotificationSender jmsNotificationSender;
 
     public DiscountDTO getCurrent(Long shopId, Long discountId) {
         shopRepository.findById(shopId).orElseThrow(() -> new ObjectNotFoundException(shopId, "Магазин"));
@@ -50,6 +58,16 @@ public class ShopDiscountService {
                 .promoCode(discountDTO.getPromoCode())
                 .shop(shop).build();
         discount = discountRepository.save(discount);
+
+        List<Subscription> subscriptions = subscriptionRepository.findAllByShopId(shop.getId());
+        for (Subscription subscription : subscriptions){
+            Client shopClient = subscription.getClient();
+            jmsNotificationSender.sendNotification(NotificationJmsMessage.builder()
+                    .to(shopClient.getEmail())
+                    .theme("Новое предложение магазина " + shop.getName())
+                    .text(discount.getTitle() + "\n" + discount.getDescription() + "\nПромокод: " + discount.getPromoCode())
+                    .build());
+        }
 
         return DiscountInListDTO.builder()
                 .id(discount.getId())

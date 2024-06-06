@@ -12,4 +12,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Subscription findByClientAndShop(Client client, Shop shop);
 
     List<Subscription> findAllByClientId(Long clientId);
+    List<Subscription> findAllByShopId(Long shopId);
 }

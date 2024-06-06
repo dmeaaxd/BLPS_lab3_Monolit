@@ -50,6 +50,13 @@ public class SubscriptionService {
         Client client = clientRepository.findByUsername(username);
         Bill bill = client.getAccountBill();
 
+        if (bill == null){
+            bill = new Bill();
+            bill.setAccountBill(0);
+            bill.setClient(client);
+            bill = billRepository.save(bill);
+        }
+
         jmsPaymentSender.sendWriteOff(WriteOffJmsMessage.builder()
                 .email(client.getEmail())
                 .billId(bill.getId())
