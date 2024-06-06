@@ -1,4 +1,4 @@
-package org.example.blps_lab3_monolit.additions;
+package org.example.blps_lab3_monolit.atomikos;
 
 import com.atomikos.icatch.jta.UserTransactionImp;
 import com.atomikos.icatch.jta.UserTransactionManager;

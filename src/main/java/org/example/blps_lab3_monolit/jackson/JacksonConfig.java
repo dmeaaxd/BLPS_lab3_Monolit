@@ -1,4 +1,4 @@
-package org.example.blps_lab3_monolit.additions;
+package org.example.blps_lab3_monolit.jackson;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

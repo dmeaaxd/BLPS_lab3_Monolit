@@ -39,20 +39,14 @@ public class SubscriptionController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        SubscriptionDTO subscribe = null;
         try {
-            subscribe = subscriptionService.subscribe(shopId, duration);
+            subscriptionService.start_subscribe(shopId, duration);
         } catch (Exception e) {
             response.put("error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        if (subscribe == null) {
-            response.put("error", "У клиента недостаточно средств");
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        }
-
-        response.put("message", "Подписка на магазин " + shopId + " для клиента оформлена/продлена на " + duration + " дней");
+        response.put("message", "Запрос на подписку на магазин с id=" + shopId + " на " + duration + " дней отправлен. Ожидайте подтверждения на почту");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -1,4 +1,4 @@
-package org.example.blps_lab3_monolit.additions.handler;
+package org.example.blps_lab3_monolit.atomikos.handler;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.springframework.http.HttpStatus;

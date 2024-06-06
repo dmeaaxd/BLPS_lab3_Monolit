@@ -10,6 +10,11 @@ import org.example.blps_lab3_monolit.app.repository.BillRepository;
 import org.example.blps_lab3_monolit.app.repository.ClientRepository;
 import org.example.blps_lab3_monolit.app.repository.ShopRepository;
 import org.example.blps_lab3_monolit.app.repository.SubscriptionRepository;
+import org.example.blps_lab3_monolit.jms.message.NotificationJmsMessage;
+import org.example.blps_lab3_monolit.jms.message.WriteOffJmsMessage;
+import org.example.blps_lab3_monolit.jms.sender.JmsNotificationSender;
+import org.example.blps_lab3_monolit.jms.sender.JmsPaymentSender;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,32 +33,36 @@ public class SubscriptionService {
     private final ShopRepository shopRepository;
     private final BillRepository billRepository;
 
+    private final JmsPaymentSender jmsPaymentSender;
+    private final JmsNotificationSender jmsNotificationSender;
 
-    @Transactional(rollbackFor = Exception.class)
-    public SubscriptionDTO subscribe(Long shopId, int duration) throws Exception {
+    private final int ONE_DAY_SUBSCRIPTION_PRICE = 10;
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        Client client = clientRepository.findByUsername(username);
-
-        Bill bill = client.getAccountBill();
-
-        int totalPrice = duration * 10;
-        if (bill.getAccountBill() >= totalPrice) {
-            bill.setAccountBill(bill.getAccountBill() - totalPrice);
-            billRepository.save(bill);
-        } else {
-            return null;
-        }
-
-
+//    @Transactional(rollbackFor = Exception.class)
+    public void start_subscribe(Long shopId, int duration) throws Exception {
         Optional<Shop> optionalShop = shopRepository.findById(shopId);
         if (optionalShop.isEmpty()) {
             throw new Exception("Магазин " + shopId + " не найден");
         }
 
-        Shop shop = optionalShop.get();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Client client = clientRepository.findByUsername(username);
+        Bill bill = client.getAccountBill();
 
+        jmsPaymentSender.sendWriteOff(WriteOffJmsMessage.builder()
+                .email(client.getEmail())
+                .billId(bill.getId())
+                .shopId(shopId)
+                .duration(duration)
+                .amount(duration * ONE_DAY_SUBSCRIPTION_PRICE).build());
+
+    }
+
+
+    public void finish_subscribe(String email, Long shopId, int duration){
+        Shop shop = shopRepository.findById(shopId).orElseThrow();
+        Client client = clientRepository.findByEmail(email);
 
         Subscription existingSubscription = subscriptionRepository.findByClientAndShop(client, shop);
         if (existingSubscription != null) {
@@ -66,16 +75,14 @@ public class SubscriptionService {
                     .build();
         }
 
-
         subscriptionRepository.save(existingSubscription);
 
-        return SubscriptionDTO.builder()
-                .clientId(existingSubscription.getClient().getId())
-                .shopId(existingSubscription.getShop().getId())
-                .duration(existingSubscription.getDuration())
-                .build();
-
+        jmsNotificationSender.sendNotification(NotificationJmsMessage.builder()
+                .to(email)
+                .theme("Оформление подписки")
+                .text("Подписка на магазин " + shop.getName() + " оформлена/продлена на " + duration + " дней").build());
     }
+
 
 
     public List<SubscriptionDTO> getSubscriptions() {

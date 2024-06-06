@@ -6,6 +6,8 @@ import org.example.blps_lab3_monolit.app.entity.Bill;
 import org.example.blps_lab3_monolit.app.entity.auth.Client;
 import org.example.blps_lab3_monolit.app.repository.BillRepository;
 import org.example.blps_lab3_monolit.app.repository.ClientRepository;
+import org.example.blps_lab3_monolit.jms.message.TopUpJmsMessage;
+import org.example.blps_lab3_monolit.jms.sender.JmsPaymentSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -13,10 +15,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class BillService {
+public class PaymentService {
 
     private final BillRepository billRepository;
     private final ClientRepository clientRepository;
+    private final JmsPaymentSender jmsPaymentSender;
 
     public int getBill() throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -30,7 +33,7 @@ public class BillService {
     }
 
 
-    public int topUp(int amount) {
+    public void topUp(int amount) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         Client client = clientRepository.findByUsername(username);
@@ -39,14 +42,13 @@ public class BillService {
         if (bill == null) {
             bill = new Bill();
             client.setAccountBill(bill);
-            bill.setAccountBill(amount);
-        } else {
-            int currentBalance = bill.getAccountBill();
-            bill.setAccountBill(currentBalance + amount);
+            bill = billRepository.save(bill);
         }
-        billRepository.save(bill);
-        return bill.getAccountBill();
+
+        jmsPaymentSender.sendTopUp(TopUpJmsMessage.builder()
+                .email(client.getEmail())
+                .billId(bill.getId())
+                .amount(amount)
+                .build());
     }
-
-
 }

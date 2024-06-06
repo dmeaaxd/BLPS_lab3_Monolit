@@ -3,7 +3,7 @@ package org.example.blps_lab3_monolit.app.controller;
 
 import lombok.AllArgsConstructor;
 import org.example.blps_lab3_monolit.app.dto.payment.PaymentDTO;
-import org.example.blps_lab3_monolit.app.service.BillService;
+import org.example.blps_lab3_monolit.app.service.PaymentService;
 import org.example.blps_lab3_monolit.app.validators.ValidationResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +19,14 @@ import java.util.Map;
 @AllArgsConstructor
 public class PaymentController {
 
-    private final BillService billService;
+    private final PaymentService paymentService;
 
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/bill")
     public ResponseEntity<?> getBill() {
         Map<String, String> response = new HashMap<>();
         try {
-            response.put("bill", String.valueOf(billService.getBill()));
+            response.put("bill", String.valueOf(paymentService.getBill()));
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.put("error", e.getMessage());
@@ -46,7 +46,8 @@ public class PaymentController {
         }
 
         try {
-            response.put("billAmount", String.valueOf(billService.topUp(paymentDTO.getAmount())));
+            paymentService.topUp(paymentDTO.getAmount());
+            response.put("message", "Запрос на пополнение отправлен. Ожидайте подтверждения на почту");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.put("error", e.getMessage());
