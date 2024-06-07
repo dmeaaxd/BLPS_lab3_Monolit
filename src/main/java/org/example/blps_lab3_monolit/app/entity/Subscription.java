@@ -9,6 +9,9 @@ import org.example.blps_lab3_monolit.app.entity.auth.Client;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 
 @Entity
 @Data
@@ -28,5 +31,6 @@ public class Subscription {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
+    private LocalDate startDate;
     private int duration;
 }

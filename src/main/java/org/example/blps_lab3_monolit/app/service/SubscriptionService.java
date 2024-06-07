@@ -18,10 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -80,6 +78,7 @@ public class SubscriptionService {
             existingSubscription = Subscription.builder()
                     .client(client)
                     .shop(shop)
+                    .startDate(LocalDate.now())
                     .duration(duration)
                     .build();
         }
