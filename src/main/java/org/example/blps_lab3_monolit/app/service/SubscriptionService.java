@@ -14,14 +14,13 @@ import org.example.blps_lab3_monolit.jms.message.NotificationJmsMessage;
 import org.example.blps_lab3_monolit.jms.message.WriteOffJmsMessage;
 import org.example.blps_lab3_monolit.jms.sender.JmsNotificationSender;
 import org.example.blps_lab3_monolit.jms.sender.JmsPaymentSender;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -38,8 +37,7 @@ public class SubscriptionService {
 
     private final int ONE_DAY_SUBSCRIPTION_PRICE = 10;
 
-//    @Transactional(rollbackFor = Exception.class)
-    public void start_subscribe(Long shopId, int duration) throws Exception {
+    public void startSubscribe(Long shopId, int duration) throws Exception {
         Optional<Shop> optionalShop = shopRepository.findById(shopId);
         if (optionalShop.isEmpty()) {
             throw new Exception("Магазин " + shopId + " не найден");
@@ -50,7 +48,7 @@ public class SubscriptionService {
         Client client = clientRepository.findByUsername(username);
         Bill bill = client.getAccountBill();
 
-        if (bill == null){
+        if (bill == null) {
             bill = new Bill();
             bill.setAccountBill(0);
             bill.setClient(client);
@@ -67,9 +65,13 @@ public class SubscriptionService {
     }
 
 
-    public void finish_subscribe(String email, Long shopId, int duration){
+    public void finishSubscribe(String email, Long shopId, int duration) throws NoSuchElementException {
         Shop shop = shopRepository.findById(shopId).orElseThrow();
         Client client = clientRepository.findByEmail(email);
+
+        if (client == null) {
+            return;
+        }
 
         Subscription existingSubscription = subscriptionRepository.findByClientAndShop(client, shop);
         if (existingSubscription != null) {
@@ -89,7 +91,6 @@ public class SubscriptionService {
                 .theme("Оформление подписки")
                 .text("Подписка на магазин " + shop.getName() + " оформлена/продлена на " + duration + " дней").build());
     }
-
 
 
     public List<SubscriptionDTO> getSubscriptions() {

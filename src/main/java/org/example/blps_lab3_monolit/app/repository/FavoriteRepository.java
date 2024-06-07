@@ -10,4 +10,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     boolean existsByClientIdAndShopId(Long clientId, Long shopId);
 
     List<Favorite> findAllByClientId(Long clientId);
+
+    List<Favorite> findAllByShopId(Long shopId);
 }

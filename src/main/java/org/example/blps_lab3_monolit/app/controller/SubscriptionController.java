@@ -40,7 +40,7 @@ public class SubscriptionController {
         }
 
         try {
-            subscriptionService.start_subscribe(shopId, duration);
+            subscriptionService.startSubscribe(shopId, duration);
         } catch (Exception e) {
             response.put("error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class FinishSubscriptionJmsMessage {
+public class RollbackPaymentJmsMessage {
     private String email;
     private Long billId;
-    private Long shopId;
-    private int duration;
     private int amount;
 }

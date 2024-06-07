@@ -9,10 +9,7 @@ import org.example.blps_lab3_monolit.app.dto.shop.ShopGetCurrentViewDTO;
 import org.example.blps_lab3_monolit.app.entity.Category;
 import org.example.blps_lab3_monolit.app.entity.Discount;
 import org.example.blps_lab3_monolit.app.entity.Shop;
-import org.example.blps_lab3_monolit.app.repository.CategoryRepository;
-import org.example.blps_lab3_monolit.app.repository.ClientRepository;
-import org.example.blps_lab3_monolit.app.repository.DiscountRepository;
-import org.example.blps_lab3_monolit.app.repository.ShopRepository;
+import org.example.blps_lab3_monolit.app.repository.*;
 import org.example.blps_lab3_monolit.app.utils.ShopComparator;
 import org.example.blps_lab3_monolit.app.utils.Sort;
 import org.hibernate.ObjectNotFoundException;
@@ -32,6 +29,8 @@ public class ShopService {
     private final ClientRepository clientRepository;
     private final DiscountRepository discountRepository;
     private final CategoryRepository categoryRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
 
     public List<ShopGetAllViewDTO> getAll(List<Integer> categories, String sortString, Integer page) {
@@ -166,6 +165,8 @@ public class ShopService {
         try {
             clientRepository.deleteAll(shop.getAdmins());
             discountRepository.deleteAll(shop.getDiscounts());
+            favoriteRepository.deleteAll(favoriteRepository.findAllByShopId(shop.getId()));
+            subscriptionRepository.deleteAll(subscriptionRepository.findAllByShopId(shop.getId()));
         } catch (Exception e) {
             throw new Exception("Админы или Предложения не найдены");
         }

@@ -32,6 +32,12 @@ public class PaymentService {
         return bill.getAccountBill();
     }
 
+    public int getBillByEmail(String email) {
+        Client client = clientRepository.findByEmail(email);
+        Bill bill = client.getAccountBill();
+        return bill.getAccountBill();
+    }
+
 
     public void topUp(int amount) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
