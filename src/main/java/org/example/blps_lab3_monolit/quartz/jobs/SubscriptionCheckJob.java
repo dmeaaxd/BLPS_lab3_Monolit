@@ -23,7 +23,7 @@ public class SubscriptionCheckJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         System.out.println("Проведена проверка на окончание подписок");
         for (Subscription subscription : subscriptionRepository.findAll()){
-            if (subscription.getStartDate().plus(Period.ofDays(100)).isAfter(LocalDate.now())){
+            if (subscription.getStartDate().plus(Period.ofDays(subscription.getDuration())).isBefore(LocalDate.now())){
                 jmsNotificationSender.sendNotification(NotificationJmsMessage.builder()
                         .to(subscription.getClient().getEmail())
                         .theme("Окончание подписки")
