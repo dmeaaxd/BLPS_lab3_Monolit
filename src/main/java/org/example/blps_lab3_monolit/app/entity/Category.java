@@ -20,7 +20,7 @@ public class Category {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    String name;
+    private String name;
 
     @OneToMany(mappedBy = "category")
     private List<Shop> shops;

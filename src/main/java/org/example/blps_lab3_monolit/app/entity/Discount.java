@@ -22,12 +22,12 @@ public class Discount {
     private Shop shop;
 
     @Column(nullable = false)
-    String title;
+    private String title;
 
     @Lob
     @Column(nullable = false)
-    String description;
+    private String description;
 
     @Column(nullable = false)
-    String promoCode;
+    private String promoCode;
 }
