@@ -1,0 +1,1162 @@
+openapi: 3.0.3
+info:
+  title: BLPS_Lab3_Monolit API
+  description: |
+    Описание API для 3 лабораторной работы по БЛПС
+    
+    **Примечание**: спецификация делалась на скорую руку за пару часов
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081/
+components:
+  schemas:
+    Role:
+      type: object
+      properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "USER"
+    Client:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          username:
+            type: string
+            example: 'dan'      
+          email:
+            type: string
+            example: 'dan_kalinin_03@mail.ru'
+          roles:
+            type: array
+            items:
+              $ref: '#/components/schemas/Role'
+    Category:
+      type: object
+      properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "category"
+    Discount:
+      type: object
+      properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "discount"
+          description:
+            type: string
+            example: "description dicount"
+          promoCode:
+            type: string
+            example: "promoCode"
+    Shop:
+      type: object
+      properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "shop"
+          description:
+            type: string
+            example: "description"
+          category:
+            $ref: '#/components/schemas/Category'
+    ShopCard:
+      type: object
+      properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "shop"
+          description:
+            type: string
+            example: "description"
+          category:
+            $ref: '#/components/schemas/Category'
+          discounts:
+            type: array
+            items:
+              $ref: '#/components/schemas/Discount'
+    ShopAdmin:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          username:
+            type: string
+            example: 'dan' 
+    Favorite:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          shopId:
+            type: integer
+            example: 1
+          shopName:
+            type: string
+            example: "shop"
+    Subscription:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          shopId:
+            type: integer
+            example: 1
+          shopName:
+            type: string
+            example: "shop"
+          startDate:
+            type: string
+            example: "01.01.2024"
+          duration:
+            type: integer
+            example: 100
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+tags:
+  - name: clients
+    description: Операции с пользователям
+  - name: categories
+    description: Операции с категориями магазинов
+  - name: shops
+    description: Операции с магазинами
+  - name: shop-admins
+    description: Управление администраторами магазинов
+  - name: shop-discounts
+    description: Операции с предложениями магазина
+  - name: favorites
+    description: Операции с избранными магазинами
+  - name: subscriptions
+    description: Операции с подписками на магазины
+  - name: payments
+    description: Операции с локальным счетом
+paths:
+  /clients/register:
+    post:
+      tags:
+        - clients
+      summary: Регистрация нового пользователя
+      operationId: register
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: "dan"       
+                  email:
+                    type: string
+                    example: 'dan_kalinin_03@mail.ru'
+                  password:
+                    type: string
+                    example: 'qwerty123'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'          
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /clients/request-change-password:
+    post:
+      tags:
+        - clients
+      summary: Запрос кода восстановления для смены пароля
+      operationId: requestChangePassword
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: "dan"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Код для восстановления пароля отправлен на вашу почту"
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /clients/change-password:
+    put:
+      tags:
+        - clients
+      summary: Смена пароля
+      operationId: changePassword
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: "dan"
+                  restorePassword:
+                    type: string
+                    example: "akjbduw1123b123"
+                  newPassword:
+                    type: string
+                    example: "qwerty123"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Доступ восстановлен, можете использовать новый пароль"
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /categories:
+    get:
+      tags:
+        - categories
+      summary: Просмотр всех категорий магазинов
+      operationId: categories
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      tags:
+        - categories
+      summary: Создание категории
+      operationId: createCategory
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "category"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /categories/{id}:
+    put:
+      tags:
+        - categories
+      summary: Обновление категории
+      operationId: updateCategory
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: id
+        description: ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "category"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+    delete:
+      tags:
+        - categories
+      summary: Удаление категории
+      operationId: deleteCategory
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: id
+        description: ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Category deleted"
+        '404':
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /shops:
+    get:
+      tags:
+        - shops
+      summary: Просмотр всех магазинов
+      operationId: shops
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shop'
+    post:
+      tags:
+        - shops
+      summary: Создание магазина
+      operationId: createShop
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "shop"
+                  description:
+                    type: string
+                    example: "description"
+                  categoryId:
+                    type: integer
+                    example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shop'
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /shops/{id}:
+    get:
+      tags:
+        - shops
+      summary: Просмотр карточки магазина
+      operationId: shop
+      parameters:
+      - in: path
+        name: id
+        description: ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  schema:
+                    $ref: '#/components/schemas/ShopCard'
+        '404':
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+    put:
+      tags:
+        - shops
+      summary: Обновление магазина
+      operationId: updateShop
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: id
+        description: ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "shop"
+                  description:
+                    type: string
+                    example: "description"
+                  categoryId:
+                    type: integer
+                    example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shop'
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+        '404':
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+    delete:
+      tags:
+        - shops
+      summary: Удаление магазина
+      operationId: deleteShop
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: id
+        description: ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Shop deleted"
+        '404':
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /shops/{id}/admins:
+    get:
+      tags:
+        - shop-admins
+      summary: Просмотр администраторов магазина
+      operationId: shopAdmins
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: id
+        description: ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShopAdmin'
+                  
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+    put:
+      tags:
+        - shop-admins
+      summary: Обновление списка администраторов магазина
+      operationId: updateShopAdmins
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: id
+        description: ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  admins:
+                    type: array
+                    items:
+                      type: integer
+                      example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShopAdmin'
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+        '404':
+          description: Client not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /shops/{shopId}/discounts:
+    get:
+      tags:
+        - shop-discounts
+      summary: Просмотр списка предложений магазина
+      operationId: shopDiscounts
+      parameters:
+      - in: path
+        name: shopId
+        description: shop ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
+        '404':
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+    post:
+      tags:
+        - shop-discounts
+      summary: Создание предложения
+      operationId: createDiscount
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: shopId
+        description: shop ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    name:
+                      type: string
+                      example: "discount"
+                    description:
+                      type: string
+                      example: "description dicount"
+                    promoCode:
+                      type: string
+                      example: "promoCode"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShopAdmin'
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+        '404':
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /shops/{shopId}/discounts/{discountId}:
+    get:
+      tags:
+        - shop-discounts
+      summary: Просмотр карточки предложения
+      operationId: discount
+      parameters:
+      - in: path
+        name: shopId
+        description: shop ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      - in: path
+        name: discountId
+        description: discount ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
+        '404':
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+    put:
+      tags:
+        - shop-discounts
+      summary: Обновление предложения
+      operationId: updateDiscount
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: shopId
+        description: shop ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      - in: path
+        name: discountId
+        description: discount ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                    name:
+                      type: string
+                      example: "discount"
+                    description:
+                      type: string
+                      example: "description dicount"
+                    promoCode:
+                      type: string
+                      example: "promoCode"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Discount'
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+        '404':
+          description: Shop or discount not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+    delete:
+      tags:
+        - shop-discounts
+      summary: Удаление предложения
+      operationId: deleteDiscount
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: shopId
+        description: shop ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      - in: path
+        name: discountId
+        description: discount ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Discount deleted"
+        '404':
+          description: Shop or discount not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /favorites:
+    get:
+      tags:
+        - favorites
+      summary: Просмотр всех избранных магазинов
+      operationId: favorites
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Favorite'
+    post:
+      tags:
+        - favorites
+      summary: Добавление магазина в избранное
+      operationId: addToFavorite
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shopId:
+                    type: integer
+                    example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+        '404':
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /favorites/{id}:
+    delete:
+      tags:
+        - favorites
+      summary: Удаление магазина из избранного
+      operationId: removeFromFavorites
+      security:
+        - basicAuth: []
+      parameters:
+      - in: path
+        name: id
+        description: ID
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Shop removed from favorites"
+        '404':
+          description: Favorite not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /subscriptions:
+    get:
+      tags:
+        - subscriptions
+      summary: Просмотр всех активных подписок
+      operationId: subscriptions
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Subscription'
+    post:
+      tags:
+        - subscriptions
+      summary: Оформление/продление подписки на магазин
+      operationId: subscribe
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  shopId:
+                    type: integer
+                    example: 1
+                  duration:
+                    type: integer
+                    example: 100
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "message"
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+        '404':
+          description: Shop not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /payments:
+    get:
+      tags:
+        - payments
+      summary: Просмотр баланса локального счета
+      operationId: payments
+      security:
+        - basicAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bill:
+                    type: integer
+                    example: 100
+    put:
+      tags:
+        - payments
+      summary: Пополнение баланса локального счета
+      operationId: topUp
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cardNumber:
+                    type: string
+                    example: "1111111111111111"
+                  amount:
+                    type: integer
+                    example: 100
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "message"
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  
