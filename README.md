@@ -133,3 +133,21 @@ PaymentService - сервис проведения финансовых опер
 ## REST API
 
 Исходный документ openapi - [openapi.yaml](openapi.yaml)
+
+Для просмотра API рекомендуется загрузить вышепредставленный файл на сайт https://editor.swagger.io/
+
+![api_1](images/api_1.png)
+
+![api_2](images/api_2.png)
+
+![api_3](images/api_3.png)
+
+![api_4](images/api_4.png)
+
+![api_5](images/api_5.png)
+
+![api_6](images/api_6.png)
+
+![api_7](images/api_7.png)
+
+![api_8](images/api_8.png)
