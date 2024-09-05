@@ -18,13 +18,16 @@ public class Discount {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "shop_id")
+    @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
+    @Column(nullable = false)
     String title;
 
     @Lob
+    @Column(nullable = false)
     String description;
 
+    @Column(nullable = false)
     String promoCode;
 }
