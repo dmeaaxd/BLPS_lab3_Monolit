@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/categories")
 @AllArgsConstructor
 public class CategoryController {
 
@@ -28,28 +28,26 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<?> create(@RequestBody CategoryDTORequest categoryDTORequest) {
 
         Map<String, String> response = new HashMap<>();
 
         if (categoryDTORequest.antiChecker()) {
             response.put("error", "Переданы неверные параметры в запросе");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         try {
-            response.put("categoryId", String.valueOf(categoryService.create(categoryDTORequest)));
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-
+            return new ResponseEntity<>(categoryService.create(categoryDTORequest), HttpStatus.OK);
         } catch (Exception e) {
             response.put("error", "Категория с данным названием уже есть: " + categoryDTORequest.getName());
-            return new ResponseEntity<>(response, HttpStatus.ALREADY_REPORTED);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
     @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
-    @PostMapping("/{id}/update")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody CategoryDTORequest categoryDTORequest) {
 
@@ -57,16 +55,15 @@ public class CategoryController {
 
         if (categoryDTORequest.antiChecker()) {
             response.put("error", "Переданы неверные параметры в запросе");
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         try {
-            response.put("categoryId", String.valueOf(categoryService.update(id, categoryDTORequest)));
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(categoryService.update(id, categoryDTORequest), HttpStatus.OK);
 
         } catch (Exception e) {
-            response.put("error", e.getMessage() + id);
-            return new ResponseEntity<>(response, HttpStatus.ALREADY_REPORTED);
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -76,7 +73,8 @@ public class CategoryController {
         Map<String, String> response = new HashMap<>();
 
         try {
-            response.put("categoryId", String.valueOf(categoryService.delete(id)));
+            categoryService.delete(id);
+            response.put("message", "Category deleted");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (Exception e) {

@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShopGetCurrentViewDTO {
+    private Long id;
     private String name;
     private String description;
     private CategoryDTORequest category;

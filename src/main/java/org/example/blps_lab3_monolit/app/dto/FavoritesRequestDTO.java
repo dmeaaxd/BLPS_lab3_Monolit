@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FavoritesRequestDTO {
     private Long shopId;
+    private String none_field;
 
     public boolean antiChecker() {
         if (shopId == null ) return true;

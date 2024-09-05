@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/subscription")
+@RequestMapping("/subscriptions")
 @AllArgsConstructor
 public class SubscriptionController {
 
@@ -28,7 +28,7 @@ public class SubscriptionController {
     }
 
     @PreAuthorize("hasAuthority('USER')")
-    @PostMapping("/subscribe")
+    @PostMapping
     public ResponseEntity<?> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequestDTO) {
         Long shopId = subscriptionRequestDTO.getShopId();
         int duration = subscriptionRequestDTO.getDuration();

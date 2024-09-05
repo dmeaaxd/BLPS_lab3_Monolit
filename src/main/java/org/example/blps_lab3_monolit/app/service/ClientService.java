@@ -53,26 +53,10 @@ public class ClientService {
 
         Client resultClient = clientRepository.save(client);
         return ClientDTO.builder()
+                .id(resultClient.getId())
                 .username(resultClient.getUsername())
                 .email(resultClient.getEmail())
                 .roles(resultClient.getRoles())
-                .build();
-    }
-
-
-    public ClientDTO setAdmin(Long id) {
-        Client client = clientRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, "Пользователь"));
-        Role role = roleRepository.findByName("SYSTEM_ADMIN");
-
-        Set<Role> roles = client.getRoles();
-        roles.add(role);
-        client.setRoles(roles);
-
-        client = clientRepository.save(client);
-        return ClientDTO.builder()
-                .username(client.getUsername())
-                .email(client.getEmail())
-                .roles(client.getRoles())
                 .build();
     }
 

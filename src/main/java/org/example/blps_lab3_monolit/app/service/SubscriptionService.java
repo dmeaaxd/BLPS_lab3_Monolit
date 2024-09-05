@@ -101,9 +101,11 @@ public class SubscriptionService {
         List<SubscriptionDTO> subscriptionDTOList = new ArrayList<>();
         for (Subscription subscription : subscriptionList) {
             subscriptionDTOList.add(SubscriptionDTO.builder()
-                    .clientId(subscription.getClient().getId())
-                    .duration(subscription.getDuration())
+                    .id(subscription.getId())
                     .shopId(subscription.getShop().getId())
+                    .shopName(subscription.getShop().getName())
+                    .startDate(String.valueOf(subscription.getStartDate()))
+                    .duration(subscription.getDuration())
                     .build());
         }
 

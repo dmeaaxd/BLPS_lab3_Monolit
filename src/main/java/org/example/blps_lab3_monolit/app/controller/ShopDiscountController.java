@@ -15,12 +15,24 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/shop_discounts")
+@RequestMapping("/shops/{shopId}/discounts")
 @AllArgsConstructor
 public class ShopDiscountController {
     private final ShopDiscountService shopDiscountService;
 
-    @GetMapping("/{shopId}/{discountId}")
+    @GetMapping
+    public ResponseEntity<?> getAll(@PathVariable Long shopId) {
+        Map<String, String> response = new HashMap<>();
+
+        try {
+            return new ResponseEntity<>(shopDiscountService.getAll(shopId), HttpStatus.OK);
+        } catch (ObjectNotFoundException exception){
+            response.put("error", "Такого магазина нет");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/{discountId}")
     public ResponseEntity<?> getCurrent(@PathVariable Long shopId,
                                         @PathVariable Long discountId) {
         Map<String, String> response = new HashMap<>();
@@ -39,7 +51,7 @@ public class ShopDiscountController {
     }
 
     @PreAuthorize("hasAuthority('SHOP_ADMIN')")
-    @PostMapping("/{shopId}/create")
+    @PostMapping
     public ResponseEntity<?> create(@PathVariable Long shopId,
                                     @RequestBody DiscountDTO discountDTO) {
 
@@ -58,7 +70,7 @@ public class ShopDiscountController {
     }
 
     @PreAuthorize("hasAuthority('SHOP_ADMIN')")
-    @PostMapping("/{shopId}/{discountId}/update")
+    @PutMapping("/{discountId}")
     public ResponseEntity<?> update(@PathVariable Long shopId,
                                     @PathVariable Long discountId,
                                     @RequestBody DiscountDTO discountDTO) {
@@ -81,7 +93,7 @@ public class ShopDiscountController {
     }
 
     @PreAuthorize("hasAuthority('SHOP_ADMIN')")
-    @DeleteMapping("/{shopId}/{discountId}")
+    @DeleteMapping("/{discountId}")
     public ResponseEntity<?> delete(@PathVariable Long shopId,
                                     @PathVariable Long discountId){
         Map<String, String> response = new HashMap<>();

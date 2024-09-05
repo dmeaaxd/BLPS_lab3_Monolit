@@ -21,13 +21,15 @@ public class PaymentService {
     private final ClientRepository clientRepository;
     private final JmsPaymentSender jmsPaymentSender;
 
-    public int getBill() throws Exception {
+    public int getBill() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         Client client = clientRepository.findByUsername(username);
         Bill bill = client.getAccountBill();
         if (bill == null){
-            throw new Exception("Для данного пользователя нет созданного счета");
+            bill = new Bill();
+            client.setAccountBill(bill);
+            bill = billRepository.save(bill);
         }
         return bill.getAccountBill();
     }

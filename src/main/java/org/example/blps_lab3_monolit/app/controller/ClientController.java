@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/clients")
 @AllArgsConstructor
 public class ClientController {
     private ClientService clientService;
@@ -33,7 +33,7 @@ public class ClientController {
         }
     }
 
-    @PostMapping("/request_change_password")
+    @PostMapping("/request-change-password")
     public ResponseEntity<?> requestChangePassword(@RequestBody RequestChangePasswordDTO requestChangePasswordDTO){
         Map<String, String> response = new HashMap<>();
         try{
@@ -46,7 +46,7 @@ public class ClientController {
         }
     }
 
-    @PostMapping("/change_password")
+    @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO){
         Map<String, String> response = new HashMap<>();
         try{
@@ -55,23 +55,8 @@ public class ClientController {
                     changePasswordDTO.getNewPassword());
             response.put("message", "Доступ восстановлен, можете использовать новый пароль");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (NoSuchElementException e){
+        } catch (Exception e){
             response.put("error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        } catch (IllegalArgumentException e){
-            response.put("error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
-    @PostMapping("set_system_admin")
-    public ResponseEntity<?> setAdmin(@RequestParam Long id) {
-        Map<String, String> response = new HashMap<>();
-        try{
-            return new ResponseEntity<>(clientService.setAdmin(id), HttpStatus.OK);
-        } catch (ObjectNotFoundException e){
-            response.put("error", "Пользователь не найден");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }

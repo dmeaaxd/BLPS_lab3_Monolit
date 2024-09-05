@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientDTO {
+    private Long id;
     private String username;
     private String email;
     private Set<Role> roles;

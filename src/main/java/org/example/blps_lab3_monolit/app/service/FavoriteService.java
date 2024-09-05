@@ -26,27 +26,30 @@ public class FavoriteService {
     private final ClientRepository clientRepository;
     private final ShopRepository shopRepository;
 
-    public Favorite add(Long shopId) throws Exception {
+    public FavoriteDTO add(Long shopId) throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         Client client = clientRepository.findByUsername(username);
         Long clientId = client.getId();
 
-        if (favoriteRepository.existsByClientIdAndShopId(clientId, shopId)) {
-            return null;
+        Favorite favorite = favoriteRepository.findByClientIdAndShopId(clientId, shopId);
+        if (favorite == null) {
+            Optional<Shop> optionalShop = shopRepository.findById(shopId);
+            if (optionalShop.isEmpty()) {
+                throw new Exception("Магазин: " + shopId + " не найден");
+            }
+
+            favorite = favoriteRepository.save(Favorite.builder()
+                    .client(client)
+                    .shop(optionalShop.get())
+                    .build());
         }
 
-        Optional<Shop> optionalShop = shopRepository.findById(shopId);
-        if (optionalShop.isEmpty()) {
-            throw new Exception("Магазин: " + shopId + " не найден");
-        }
-
-        Favorite favorite = Favorite.builder()
-                .client(client)
-                .shop(optionalShop.get())
+        return FavoriteDTO.builder()
+                .id(favorite.getId())
+                .shopId(favorite.getShop().getId())
+                .shopName(favorite.getShop().getName())
                 .build();
-
-        return favoriteRepository.save(favorite);
     }
 
 
@@ -60,8 +63,8 @@ public class FavoriteService {
         for (Favorite favorite : favoriteList) {
             favoriteDTOList.add(FavoriteDTO.builder()
                             .id(favorite.getId())
-                            .clientId(favorite.getClient().getId())
                             .shopId(favorite.getShop().getId())
+                            .shopName(favorite.getShop().getName())
                             .build());
         }
 

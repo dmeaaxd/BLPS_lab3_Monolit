@@ -2,6 +2,7 @@ package org.example.blps_lab3_monolit.app.controller;
 
 import lombok.AllArgsConstructor;
 import org.example.blps_lab3_monolit.app.dto.FavoriteDTO;
+import org.example.blps_lab3_monolit.app.dto.FavoritesRequestDTO;
 import org.example.blps_lab3_monolit.app.entity.Favorite;
 import org.example.blps_lab3_monolit.app.service.FavoriteService;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/favorite")
+@RequestMapping("/favorites")
 @AllArgsConstructor
 public class FavoriteController {
 
@@ -28,30 +29,24 @@ public class FavoriteController {
     }
 
     @PreAuthorize("hasAuthority('USER')")
-    @PostMapping("/add/{shopId}")
-    public ResponseEntity<?> favoriteShop(@PathVariable Long shopId) {
+    @PostMapping
+    public ResponseEntity<?> addToFavorite(@RequestBody FavoritesRequestDTO favoritesRequestDTO) {
+        Long shopId = favoritesRequestDTO.getShopId();
 
-        Favorite favorite = null;
-        Map<String, String> response = new HashMap<>();
         try {
-            favorite = favoriteService.add(shopId);
+            return new ResponseEntity<>(favoriteService.add(shopId), HttpStatus.OK);
         } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
             response.put("message", "Магазин " + shopId + " не найден");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        if (favorite != null) {
-            response.put("message", "Магазин: " + shopId + " добавлен в избранное для клиента");
-        } else {
-            response.put("error", "Магазин уже добавлен в избранное для клиента");
-        }
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('USER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> removeToFavorite(@PathVariable Long id) {
         Map<String, String> response = new HashMap<>();
 
         try {

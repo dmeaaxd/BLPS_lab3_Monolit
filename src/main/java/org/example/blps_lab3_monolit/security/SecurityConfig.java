@@ -25,11 +25,11 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf((csrf) -> csrf.ignoringRequestMatchers("/**"))
-                .authorizeHttpRequests((requests) -> requests.requestMatchers(new AntPathRequestMatcher("/auth/register")).permitAll())
-                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/auth/request_change_password").permitAll())
-                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/auth/change_password").permitAll())
-                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.GET, "/shop/**").permitAll())
-                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.GET, "/category/**").permitAll())
+                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/clients/register").permitAll())
+                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/clients/request-change-password").permitAll())
+                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.PUT, "/clients/change-password").permitAll())
+                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.GET, "/shops/**").permitAll())
+                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.GET, "/categories/**").permitAll())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.GET, "/shop_discounts/**").permitAll())
                 .authorizeHttpRequests((requests) -> requests.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())

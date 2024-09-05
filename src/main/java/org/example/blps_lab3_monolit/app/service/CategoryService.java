@@ -19,7 +19,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public Long create(CategoryDTORequest categoryDTORequest) throws Exception {
+    public CategoryDTOResponse create(CategoryDTORequest categoryDTORequest) throws Exception {
         Category newCategory = Category.builder()
                 .name(categoryDTORequest.getName())
                 .build();
@@ -28,17 +28,20 @@ public class CategoryService {
             throw new Exception("Эта категория уже есть");
         }
 
-        categoryRepository.save(newCategory);
+        newCategory = categoryRepository.save(newCategory);
 
-        return newCategory.getId();
+        return CategoryDTOResponse.builder()
+                .id(newCategory.getId())
+                .name(newCategory.getName())
+                .build();
     }
 
 
-    public Long update(Long id, CategoryDTORequest categoryDTORequest) throws Exception {
+    public CategoryDTOResponse update(Long id, CategoryDTORequest categoryDTORequest) throws Exception {
         Optional<Category> optionalCategory = categoryRepository.findById(id);
 
         if (optionalCategory.isEmpty()) {
-            throw new Exception("Категория с данным ID не найдена: ");
+            throw new Exception("Категория с данным ID не найдена: " + id);
         }
 
         Category category = optionalCategory.get();
@@ -46,14 +49,17 @@ public class CategoryService {
 
         if (newName != null && !newName.equals(category.getName())) {
             if (categoryRepository.findByName(newName).isPresent()) {
-                throw new Exception("Категория с данным ID уже существует: ");
+                throw new Exception("Категория с данным наименование уже существует: " + id);
             }
             category.setName(newName);
         }
 
-        categoryRepository.save(category);
+        Category updatedCategory = categoryRepository.save(category);
 
-        return category.getId();
+        return CategoryDTOResponse.builder()
+                .id(updatedCategory.getId())
+                .name(updatedCategory.getName())
+                .build();
     }
 
 

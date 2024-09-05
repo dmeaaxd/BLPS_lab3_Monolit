@@ -16,13 +16,13 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/shop_admins")
+@RequestMapping("/shops/{id}/admins")
 @AllArgsConstructor
 public class ShopAdminsController {
     private final ShopAdminsService shopAdminsService;
 
     @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
-    @GetMapping("/{id}")
+    @GetMapping
     public ResponseEntity<?> getShopAdmins(@PathVariable Long id) {
         Map<String, String> response = new HashMap<>();
         try {
@@ -34,7 +34,7 @@ public class ShopAdminsController {
     }
 
     @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
-    @PostMapping("/{id}/update")
+    @PutMapping
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody ShopAdminsDTO adminsDTO) {
         List<Long> admins = adminsDTO.getAdmins();

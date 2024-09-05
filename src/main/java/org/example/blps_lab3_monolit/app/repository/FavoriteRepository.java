@@ -1,5 +1,6 @@
 package org.example.blps_lab3_monolit.app.repository;
 
+import org.example.blps_lab3_monolit.app.dto.FavoriteDTO;
 import org.example.blps_lab3_monolit.app.entity.Favorite;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,4 +13,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     List<Favorite> findAllByClientId(Long clientId);
 
     List<Favorite> findAllByShopId(Long shopId);
+
+    Favorite findByClientIdAndShopId(Long clientId, Long shopId);
 }

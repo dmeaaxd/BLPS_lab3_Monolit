@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FavoriteDTO {
     private Long id;
-    private Long clientId;
     private Long shopId;
+    private String shopName;
 }

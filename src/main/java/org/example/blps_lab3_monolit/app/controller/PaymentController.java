@@ -15,27 +15,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/payments")
 @AllArgsConstructor
 public class PaymentController {
 
     private final PaymentService paymentService;
 
     @PreAuthorize("hasAuthority('USER')")
-    @GetMapping("/bill")
+    @GetMapping
     public ResponseEntity<?> getBill() {
         Map<String, String> response = new HashMap<>();
-        try {
-            response.put("bill", String.valueOf(paymentService.getBill()));
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            response.put("error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
+        response.put("bill", String.valueOf(paymentService.getBill()));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('USER')")
-    @PostMapping("/topUp")
+    @PutMapping
     public ResponseEntity<?> topUp(@RequestBody PaymentDTO paymentDTO) {
         Map<String, String> response = new HashMap<>();
 
@@ -51,7 +46,7 @@ public class PaymentController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.put("error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 }

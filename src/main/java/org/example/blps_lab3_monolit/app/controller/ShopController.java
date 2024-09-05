@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/shop")
+@RequestMapping("/shops")
 @AllArgsConstructor
 public class ShopController {
 
@@ -70,7 +70,7 @@ public class ShopController {
     }
 
     @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<?> create(@RequestBody ShopDTO shopDTO) {
         Map<String, String> response = new HashMap<>();
         if (shopDTO.antiCheckerRegister()) {
@@ -91,7 +91,7 @@ public class ShopController {
     }
 
     @PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
-    @PostMapping("/{id}/update")
+    @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
                                     @RequestBody ShopDTO shopDTO) {
 

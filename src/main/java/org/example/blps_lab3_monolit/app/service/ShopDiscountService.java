@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,11 +33,27 @@ public class ShopDiscountService {
 
     private final JmsNotificationSender jmsNotificationSender;
 
-    public DiscountDTO getCurrent(Long shopId, Long discountId) {
+    public List<DiscountInListDTO> getAll(Long shopId) {
+        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new ObjectNotFoundException(shopId, "Магазин"));
+        List<Discount> discounts = shop.getDiscounts();
+        List<DiscountInListDTO> discountInListDTOS = new ArrayList<>();
+        for (Discount discount : discounts){
+            discountInListDTOS.add(DiscountInListDTO.builder()
+                    .id(discount.getId())
+                    .title(discount.getTitle())
+                    .description(discount.getDescription())
+                    .promoCode(discount.getPromoCode())
+                    .build());
+        }
+        return discountInListDTOS;
+    }
+
+    public DiscountInListDTO getCurrent(Long shopId, Long discountId) {
         shopRepository.findById(shopId).orElseThrow(() -> new ObjectNotFoundException(shopId, "Магазин"));
         Discount discount = discountRepository.findById(discountId).orElseThrow(() -> new ObjectNotFoundException(discountId, "Предложение"));
 
-        return DiscountDTO.builder()
+        return DiscountInListDTO.builder()
+                .id(discount.getId())
                 .title(discount.getTitle())
                 .description(discount.getDescription())
                 .promoCode(discount.getPromoCode())
@@ -122,5 +139,6 @@ public class ShopDiscountService {
 
         return client.getShop() != null && Objects.equals(client.getShop().getId(), shopId);
     }
+
 
 }

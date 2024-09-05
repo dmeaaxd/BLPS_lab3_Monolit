@@ -119,6 +119,7 @@ public class ShopService {
                 .build();
 
         return ShopGetCurrentViewDTO.builder()
+                .id(shop.getId())
                 .name(shop.getName())
                 .description(shop.getDescription())
                 .category(categoryDTORequest)

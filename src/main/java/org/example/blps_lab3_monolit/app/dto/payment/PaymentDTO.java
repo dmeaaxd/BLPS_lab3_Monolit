@@ -12,8 +12,8 @@ import org.example.blps_lab3_monolit.app.validators.ValidationResult;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentDTO {
-    String cardNumber;
-    int amount;
+    private String cardNumber;
+    private int amount;
 
     public ValidationResult validate() {
         if (cardNumber == null || cardNumber.length() != 16){
