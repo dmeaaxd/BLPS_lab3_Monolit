@@ -25,6 +25,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf((csrf) -> csrf.ignoringRequestMatchers("/**"))
+                .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/clients/auth").permitAll())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/clients/register").permitAll())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/clients/request-change-password").permitAll())
                 .authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.PUT, "/clients/change-password").permitAll())

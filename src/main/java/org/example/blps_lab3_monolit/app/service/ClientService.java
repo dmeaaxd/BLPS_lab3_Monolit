@@ -28,13 +28,26 @@ public class ClientService {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
 
+    public boolean auth(String username, String password) throws Exception{
+        if (username == null || username.isEmpty() || password == null || password.isEmpty()){
+            throw new Exception("Fields can't be empty");
+        }
+
+        Client client = clientRepository.findByUsername(username);
+        if (client == null) {
+            throw new NoSuchElementException("User " + username + " not found");
+        }
+
+        return passwordEncoder.matches(password, client.getPassword());
+    }
+
     public ClientDTO register(RegisterDTO registerDTO) throws Exception {
         if (clientRepository.existsByUsername(registerDTO.getUsername())) {
             throw new Exception("Username is already taken!");
         }
 
         if (registerDTO.antiCheckerRegister()){
-            throw new IllegalArgumentException("Данные введены некорректно, все поля должны быть заполнены");
+            throw new Exception("Fields can't be empty");
         }
 
         if (clientRepository.existsByEmail(registerDTO.getEmail())) {
@@ -63,7 +76,7 @@ public class ClientService {
     public void requestChangePassword(String username) throws NoSuchElementException{
         Client client = clientRepository.findByUsername(username);
         if (client == null) {
-            throw new NoSuchElementException("Пользователь с username " + username + " не найден");
+            throw new NoSuchElementException("User " + username + " not found");
         }
 
         String restorePassword = generateRestorePassword();
@@ -91,18 +104,20 @@ public class ClientService {
     }
 
 
-    public void changePassword(String username, String restorePassword, String newPassword) throws NoSuchElementException, IllegalArgumentException{
+    public void changePassword(String username, String restorePassword, String newPassword) throws Exception{
         Client client = clientRepository.findByUsername(username);
         if (client == null) {
-            throw new NoSuchElementException("Пользователь с username " + username + " не найден");
+            throw new NoSuchElementException("User " + username + " not found");
         }
 
         if (!passwordEncoder.matches(restorePassword, client.getRestorePassword())){
-            throw new IllegalArgumentException("Введен некорректный код восстановления");
+            throw new Exception("Incorrect restore password");
         }
 
         client.setRestorePassword(null);
         client.setPassword(passwordEncoder.encode(newPassword));
         clientRepository.save(client);
     }
+
+
 }

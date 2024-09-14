@@ -22,6 +22,27 @@ import java.util.NoSuchElementException;
 public class ClientController {
     private ClientService clientService;
 
+    @PostMapping("/auth")
+    public ResponseEntity<?> auth(@RequestParam String username,
+                                  @RequestParam String password) {
+        Map<String, String> response = new HashMap<>();
+        try{
+            boolean result = clientService.auth(username, password);
+            if (result){
+                response.put("message", "Authorized");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else {
+                response.put("error", "Incorrect user data");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+
+        } catch (Exception e){
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO) {
         Map<String, String> response = new HashMap<>();
@@ -46,7 +67,7 @@ public class ClientController {
         }
     }
 
-    @PostMapping("/change-password")
+    @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO){
         Map<String, String> response = new HashMap<>();
         try{

@@ -152,6 +152,56 @@ tags:
   - name: payments
     description: Операции с локальным счетом
 paths:
+  /clients/auth:
+    post:
+      tags:
+        - clients
+      summary: Авторизация пользователя
+      operationId: auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "dan"
+                password:
+                  type: string
+                  example: 'qwerty123'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Authorized"
+        '400':
+          description: Incorrect request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Incorrect user data"
   /clients/register:
     post:
       tags:
