@@ -28,7 +28,7 @@ public class ClientService {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
 
-    public boolean auth(String username, String password) throws Exception{
+    public ClientDTO auth(String username, String password) throws Exception{
         if (username == null || username.isEmpty() || password == null || password.isEmpty()){
             throw new Exception("Fields can't be empty");
         }
@@ -38,7 +38,16 @@ public class ClientService {
             throw new NoSuchElementException("User " + username + " not found");
         }
 
-        return passwordEncoder.matches(password, client.getPassword());
+        if (!passwordEncoder.matches(password, client.getPassword())) {
+            throw new IllegalAccessException("Incorrect user data");
+        }
+
+        return ClientDTO.builder()
+                .id(client.getId())
+                .username(client.getUsername())
+                .email(client.getEmail())
+                .roles(client.getRoles())
+                .build();
     }
 
     public ClientDTO register(RegisterDTO registerDTO) throws Exception {

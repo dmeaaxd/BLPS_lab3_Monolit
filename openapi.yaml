@@ -177,11 +177,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Authorized"
+                $ref: '#/components/schemas/Client'
         '400':
           description: Incorrect request
           content:

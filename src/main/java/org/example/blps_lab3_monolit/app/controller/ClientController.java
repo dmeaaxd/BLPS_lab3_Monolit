@@ -27,19 +27,16 @@ public class ClientController {
                                   @RequestParam String password) {
         Map<String, String> response = new HashMap<>();
         try{
-            boolean result = clientService.auth(username, password);
-            if (result){
-                response.put("message", "Authorized");
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            else {
-                response.put("error", "Incorrect user data");
+            return new ResponseEntity<>(clientService.auth(username, password), HttpStatus.OK);
+        } catch (Exception e){
+            if (e instanceof IllegalAccessException){
+                response.put("error", e.getMessage());
                 return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
             }
-
-        } catch (Exception e){
-            response.put("error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            else {
+                response.put("error", e.getMessage());
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
         }
     }
 
