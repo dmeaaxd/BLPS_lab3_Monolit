@@ -29,6 +29,18 @@ public class FavoriteController {
     }
 
     @PreAuthorize("hasAuthority('USER')")
+    @GetMapping("/by-shop-id/{shopId}")
+    public ResponseEntity<?> getByShopId(@PathVariable Long shopId) {
+        try{
+            return new ResponseEntity<>(favoriteService.getFavoriteByShopId(shopId), HttpStatus.OK);
+        } catch (Exception e){
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Favorite not found");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping
     public ResponseEntity<?> addToFavorite(@RequestBody FavoritesRequestDTO favoritesRequestDTO) {
         Long shopId = favoritesRequestDTO.getShopId();

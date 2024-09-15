@@ -71,6 +71,23 @@ public class FavoriteService {
         return favoriteDTOList;
     }
 
+    public FavoriteDTO getFavoriteByShopId(Long shopId) throws Exception {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Client client = clientRepository.findByUsername(username);
+
+        Favorite favorite = favoriteRepository.findByClientIdAndShopId(client.getId(), shopId);
+        if (favorite == null) {
+            throw new Exception("Favorite not found");
+        }
+
+        return FavoriteDTO.builder()
+                .id(favorite.getId())
+                .shopId(favorite.getShop().getId())
+                .shopName(favorite.getShop().getName())
+                .build();
+    }
+
 
     public String remove(Long favoriteId) throws Exception {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -86,4 +103,6 @@ public class FavoriteService {
         favoriteRepository.deleteById(favoriteId);
         return "Магазин удален из избранного";
     }
+
+
 }

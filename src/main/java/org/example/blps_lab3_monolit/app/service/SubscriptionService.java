@@ -1,8 +1,10 @@
 package org.example.blps_lab3_monolit.app.service;
 
 import lombok.AllArgsConstructor;
+import org.example.blps_lab3_monolit.app.dto.FavoriteDTO;
 import org.example.blps_lab3_monolit.app.dto.SubscriptionDTO;
 import org.example.blps_lab3_monolit.app.entity.Bill;
+import org.example.blps_lab3_monolit.app.entity.Favorite;
 import org.example.blps_lab3_monolit.app.entity.Shop;
 import org.example.blps_lab3_monolit.app.entity.Subscription;
 import org.example.blps_lab3_monolit.app.entity.auth.Client;
@@ -14,6 +16,7 @@ import org.example.blps_lab3_monolit.jms.message.NotificationJmsMessage;
 import org.example.blps_lab3_monolit.jms.message.WriteOffJmsMessage;
 import org.example.blps_lab3_monolit.jms.sender.JmsNotificationSender;
 import org.example.blps_lab3_monolit.jms.sender.JmsPaymentSender;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -110,6 +113,26 @@ public class SubscriptionService {
         }
 
         return subscriptionDTOList;
+    }
+
+    public SubscriptionDTO getSubscriptionByShopId(Long shopId) throws Exception {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Client client = clientRepository.findByUsername(username);
+        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new Exception("Shop not found"));
+
+        Subscription subscription = subscriptionRepository.findByClientAndShop(client, shop);
+        if (subscription == null) {
+            throw new Exception("Subscription not found");
+        }
+
+        return SubscriptionDTO.builder()
+                .id(subscription.getId())
+                .shopId(subscription.getShop().getId())
+                .shopName(subscription.getShop().getName())
+                .startDate(String.valueOf(subscription.getStartDate()))
+                .duration(subscription.getDuration())
+                .build();
     }
 }
 

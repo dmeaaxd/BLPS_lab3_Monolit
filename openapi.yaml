@@ -13,123 +13,123 @@ components:
     Role:
       type: object
       properties:
-          id:
-            type: integer
-            example: 1
-          name:
-            type: string
-            example: "USER"
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "USER"
     Client:
-        type: object
-        properties:
-          id:
-            type: integer
-            example: 1
-          username:
-            type: string
-            example: 'dan'      
-          email:
-            type: string
-            example: 'dan_kalinin_03@mail.ru'
-          roles:
-            type: array
-            items:
-              $ref: '#/components/schemas/Role'
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: 'dan'
+        email:
+          type: string
+          example: 'dan_kalinin_03@mail.ru'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
     Category:
       type: object
       properties:
-          id:
-            type: integer
-            example: 1
-          name:
-            type: string
-            example: "category"
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "category"
     Discount:
       type: object
       properties:
-          id:
-            type: integer
-            example: 1
-          name:
-            type: string
-            example: "discount"
-          description:
-            type: string
-            example: "description dicount"
-          promoCode:
-            type: string
-            example: "promoCode"
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "discount"
+        description:
+          type: string
+          example: "description dicount"
+        promoCode:
+          type: string
+          example: "promoCode"
     Shop:
       type: object
       properties:
-          id:
-            type: integer
-            example: 1
-          name:
-            type: string
-            example: "shop"
-          description:
-            type: string
-            example: "description"
-          category:
-            $ref: '#/components/schemas/Category'
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "shop"
+        description:
+          type: string
+          example: "description"
+        category:
+          $ref: '#/components/schemas/Category'
     ShopCard:
       type: object
       properties:
-          id:
-            type: integer
-            example: 1
-          name:
-            type: string
-            example: "shop"
-          description:
-            type: string
-            example: "description"
-          category:
-            $ref: '#/components/schemas/Category'
-          discounts:
-            type: array
-            items:
-              $ref: '#/components/schemas/Discount'
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "shop"
+        description:
+          type: string
+          example: "description"
+        category:
+          $ref: '#/components/schemas/Category'
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Discount'
     ShopAdmin:
-        type: object
-        properties:
-          id:
-            type: integer
-            example: 1
-          username:
-            type: string
-            example: 'dan' 
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: 'dan'
     Favorite:
-        type: object
-        properties:
-          id:
-            type: integer
-            example: 1
-          shopId:
-            type: integer
-            example: 1
-          shopName:
-            type: string
-            example: "shop"
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        shopId:
+          type: integer
+          example: 1
+        shopName:
+          type: string
+          example: "shop"
     Subscription:
-        type: object
-        properties:
-          id:
-            type: integer
-            example: 1
-          shopId:
-            type: integer
-            example: 1
-          shopName:
-            type: string
-            example: "shop"
-          startDate:
-            type: string
-            example: "01.01.2024"
-          duration:
-            type: integer
-            example: 100
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        shopId:
+          type: integer
+          example: 1
+        shopName:
+          type: string
+          example: "shop"
+        startDate:
+          type: string
+          example: "01.01.2024"
+        duration:
+          type: integer
+          example: 100
   securitySchemes:
     basicAuth:
       type: http
@@ -177,7 +177,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Client'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Authorized"
         '400':
           description: Incorrect request
           content:
@@ -207,26 +211,26 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-                    example: "dan"       
-                  email:
-                    type: string
-                    example: 'dan_kalinin_03@mail.ru'
-                  password:
-                    type: string
-                    example: 'qwerty123'
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "dan"
+                email:
+                  type: string
+                  example: 'dan_kalinin_03@mail.ru'
+                password:
+                  type: string
+                  example: 'qwerty123'
       responses:
         '200':
           description: successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Client'          
+                $ref: '#/components/schemas/Client'
         '400':
           description: Incorrect request
           content:
@@ -246,13 +250,13 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-                    example: "dan"
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "dan"
       responses:
         '200':
           description: successful operation
@@ -283,19 +287,19 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-                    example: "dan"
-                  restorePassword:
-                    type: string
-                    example: "akjbduw1123b123"
-                  newPassword:
-                    type: string
-                    example: "qwerty123"
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "dan"
+                restorePassword:
+                  type: string
+                  example: "akjbduw1123b123"
+                newPassword:
+                  type: string
+                  example: "qwerty123"
       responses:
         '200':
           description: successful operation
@@ -342,13 +346,13 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    example: "category"
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "category"
       responses:
         '200':
           description: successful operation
@@ -375,24 +379,24 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: id
-        description: ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: id
+          description: ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    example: "category"
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "category"
       responses:
         '200':
           description: successful operation
@@ -428,14 +432,14 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: id
-        description: ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: id
+          description: ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
         '200':
           description: successful operation
@@ -482,19 +486,19 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    example: "shop"
-                  description:
-                    type: string
-                    example: "description"
-                  categoryId:
-                    type: integer
-                    example: 1
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "shop"
+                description:
+                  type: string
+                  example: "description"
+                categoryId:
+                  type: integer
+                  example: 1
       responses:
         '200':
           description: successful operation
@@ -519,14 +523,14 @@ paths:
       summary: Просмотр карточки магазина
       operationId: shop
       parameters:
-      - in: path
-        name: id
-        description: ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: id
+          description: ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
         '200':
           description: successful operation
@@ -555,30 +559,30 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: id
-        description: ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: id
+          description: ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    example: "shop"
-                  description:
-                    type: string
-                    example: "description"
-                  categoryId:
-                    type: integer
-                    example: 1
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "shop"
+                description:
+                  type: string
+                  example: "description"
+                categoryId:
+                  type: integer
+                  example: 1
       responses:
         '200':
           description: successful operation
@@ -614,14 +618,14 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: id
-        description: ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: id
+          description: ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
         '200':
           description: successful operation
@@ -652,14 +656,14 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: id
-        description: ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: id
+          description: ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
         '200':
           description: successful operation
@@ -669,7 +673,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ShopAdmin'
-                  
+
         '400':
           description: Incorrect request
           content:
@@ -688,26 +692,26 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: id
-        description: ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: id
+          description: ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  admins:
-                    type: array
-                    items:
-                      type: integer
-                      example: 1
+          application/json:
+            schema:
+              type: object
+              properties:
+                admins:
+                  type: array
+                  items:
+                    type: integer
+                    example: 1
       responses:
         '200':
           description: successful operation
@@ -744,14 +748,14 @@ paths:
       summary: Просмотр списка предложений магазина
       operationId: shopDiscounts
       parameters:
-      - in: path
-        name: shopId
-        description: shop ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: shopId
+          description: shop ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
         '200':
           description: successful operation
@@ -779,30 +783,30 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: shopId
-        description: shop ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: shopId
+          description: shop ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                    name:
-                      type: string
-                      example: "discount"
-                    description:
-                      type: string
-                      example: "description dicount"
-                    promoCode:
-                      type: string
-                      example: "promoCode"
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "discount"
+                description:
+                  type: string
+                  example: "description dicount"
+                promoCode:
+                  type: string
+                  example: "promoCode"
       responses:
         '200':
           description: successful operation
@@ -839,22 +843,22 @@ paths:
       summary: Просмотр карточки предложения
       operationId: discount
       parameters:
-      - in: path
-        name: shopId
-        description: shop ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      - in: path
-        name: discountId
-        description: discount ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: shopId
+          description: shop ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - in: path
+          name: discountId
+          description: discount ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
         '200':
           description: successful operation
@@ -882,38 +886,38 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: shopId
-        description: shop ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      - in: path
-        name: discountId
-        description: discount ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: shopId
+          description: shop ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - in: path
+          name: discountId
+          description: discount ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                    name:
-                      type: string
-                      example: "discount"
-                    description:
-                      type: string
-                      example: "description dicount"
-                    promoCode:
-                      type: string
-                      example: "promoCode"
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "discount"
+                description:
+                  type: string
+                  example: "description dicount"
+                promoCode:
+                  type: string
+                  example: "promoCode"
       responses:
         '200':
           description: successful operation
@@ -951,22 +955,22 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: shopId
-        description: shop ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
-      - in: path
-        name: discountId
-        description: discount ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: shopId
+          description: shop ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+        - in: path
+          name: discountId
+          description: discount ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
         '200':
           description: successful operation
@@ -980,6 +984,40 @@ paths:
                     example: "Discount deleted"
         '404':
           description: Shop or discount not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /favorites/by-shop-id/{shopId}:
+    get:
+      tags:
+        - favorites
+      summary: Получить избранное пользователя по идентификатору магазина
+      operationId: favorite-by-shop-id
+      security:
+        - basicAuth: []
+      parameters:
+        - in: path
+          name: shopId
+          description: shopId
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+        '404':
+          description: Favorite not found
           content:
             application/json:
               schema:
@@ -1015,13 +1053,13 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  shopId:
-                    type: integer
-                    example: 1
+          application/json:
+            schema:
+              type: object
+              properties:
+                shopId:
+                  type: integer
+                  example: 1
       responses:
         '200':
           description: successful operation
@@ -1048,14 +1086,14 @@ paths:
       security:
         - basicAuth: []
       parameters:
-      - in: path
-        name: id
-        description: ID
-        required: true
-        schema:
-          type: integer
-          format: int64
-          example: 1
+        - in: path
+          name: id
+          description: ID
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
       responses:
         '200':
           description: successful operation
@@ -1069,6 +1107,40 @@ paths:
                     example: "Shop removed from favorites"
         '404':
           description: Favorite not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "error"
+  /subscriptions/by-shop-id/{shopId}:
+    get:
+      tags:
+        - subscriptions
+      summary: Получить подписку пользователя по идентификатору магазина
+      operationId: subscription-by-shop-id
+      security:
+        - basicAuth: []
+      parameters:
+        - in: path
+          name: shopId
+          description: shopId
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '404':
+          description: Subscription not found
           content:
             application/json:
               schema:
@@ -1104,16 +1176,16 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  shopId:
-                    type: integer
-                    example: 1
-                  duration:
-                    type: integer
-                    example: 100
+          application/json:
+            schema:
+              type: object
+              properties:
+                shopId:
+                  type: integer
+                  example: 1
+                duration:
+                  type: integer
+                  example: 100
       responses:
         '200':
           description: successful operation
@@ -1174,16 +1246,16 @@ paths:
       requestBody:
         required: true
         content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  cardNumber:
-                    type: string
-                    example: "1111111111111111"
-                  amount:
-                    type: integer
-                    example: 100
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardNumber:
+                  type: string
+                  example: "1111111111111111"
+                amount:
+                  type: integer
+                  example: 100
       responses:
         '200':
           description: successful operation

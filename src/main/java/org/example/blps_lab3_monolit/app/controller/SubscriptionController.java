@@ -28,6 +28,18 @@ public class SubscriptionController {
     }
 
     @PreAuthorize("hasAuthority('USER')")
+    @GetMapping("/by-shop-id/{shopId}")
+    public ResponseEntity<?> getSubscriptionByShopId(@PathVariable Long shopId) {
+        try{
+            return new ResponseEntity<>(subscriptionService.getSubscriptionByShopId(shopId), HttpStatus.OK);
+        } catch (Exception e){
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Subscription not found");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping
     public ResponseEntity<?> subscribe(@RequestBody SubscriptionRequestDTO subscriptionRequestDTO) {
         Long shopId = subscriptionRequestDTO.getShopId();
