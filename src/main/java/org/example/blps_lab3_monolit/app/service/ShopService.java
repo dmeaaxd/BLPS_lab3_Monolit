@@ -146,6 +146,7 @@ public class ShopService {
         return shopRepository.save(newShop);
     }
 
+    @Transactional(rollbackFor = ObjectNotFoundException.class)
     public Shop update(Long id, ShopDTO shopDTO) throws ObjectNotFoundException {
         Shop shop = shopRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException(id, "Магазин"));
 
